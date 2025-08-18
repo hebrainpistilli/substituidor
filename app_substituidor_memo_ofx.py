@@ -1,15 +1,16 @@
-
 import streamlit as st
+import re
+import unicodedata
 
 st.set_page_config(
-    page_title="Substituidor IUGU",
+    page_title="Substituidor e Normalizador de MEMOs OFX",
     page_icon="📝",
     layout="centered"
 )
 
-st.title("📝 Substituidor IUGU OFX")
+st.title("📝 Substituidor e Normalizador de MEMOs OFX")
 st.markdown("""
-Este app processa arquivos `.OFX` (formato SGML) com duas funções principais:
+Este app processa arquivos `.OFX` (formato TXT) com duas funções principais:
 
 1. **Substituição específica**:
    - `<MEMO>Tarifa fatura: ...</MEMO>` → `Tarifa de Fatura`
