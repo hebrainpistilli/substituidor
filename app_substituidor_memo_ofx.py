@@ -2,12 +2,12 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Substituidor de MEMOs OFX",
+    page_title="Substituidor IUGU",
     page_icon="📝",
     layout="centered"
 )
 
-st.title("📝 Substituidor de MEMOs OFX")
+st.title("📝 Substituidor IUGU OFX")
 st.markdown("Este app substitui MEMOs que comecem com **'Tarifa fatura:'** por **'Tarifa de Fatura'** em arquivos OFX (formato SGML).")
 
 uploaded_file = st.file_uploader("📤 Envie seu arquivo .ofx", type="ofx")
