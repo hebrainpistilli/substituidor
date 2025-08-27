@@ -1,6 +1,7 @@
 import streamlit as st
 import re
 import unicodedata
+from datetime import datetime
 
 st.set_page_config(
     page_title="Substituidor e Normalizador de MEMOs OFX",
@@ -42,7 +43,16 @@ if uploaded_file is not None:
     with st.spinner("Aplicando substituição e remoção de acentos..."):
         content = uploaded_file.read().decode("latin1")
         new_content = substituir_e_normalizar(content)
+        
+    # Obtém a data atual no formato YYYY-MM-DD
+    data_hoje = datetime.now().strftime("%Y-%m-%d")
+    nome_arquivo = f"OFX_Filtrado_{data_hoje}.ofx"
 
     st.success("✅ Arquivo processado com sucesso!")
 
-    st.download_button("📥 Baixar OFX tratado", new_content, file_name="extrato_ofx_tratado.ofx", mime="text/plain")
+    st.download_button(
+        "📥 Baixar OFX tratado",
+        new_content,
+        file_name=nome_arquivo,
+        mime="text/plain"
+    )
