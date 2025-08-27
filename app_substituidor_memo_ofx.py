@@ -100,7 +100,7 @@ def substituir_e_normalizar(content):
 
 # --- Layout Principal da Página em um único container centralizado ---
 with st.container():
-    st.title("📝 Normalizador de OFX")
+    st.title("📝 Tratamento e Padronização de OFX")
     st.markdown("---")
     st.markdown("Faça o upload do seu arquivo `.ofx` para iniciar o processo de limpeza.")
     
