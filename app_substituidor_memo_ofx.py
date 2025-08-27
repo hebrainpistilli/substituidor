@@ -5,7 +5,7 @@ from datetime import datetime
 
 # --- Configuração da Página e Tema ---
 st.set_page_config(
-    page_title="Normalizador de OFX",
+    page_title="Tratamento e Padronização de OFX",
     page_icon="📝",
     layout="wide",
     initial_sidebar_state="auto"
