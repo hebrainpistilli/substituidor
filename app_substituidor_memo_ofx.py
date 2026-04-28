@@ -72,35 +72,34 @@ with st.container():
     if uploaded_file is not None:
         try:
             df = None
-            # Tenta ler arquivos Excel (.xlsx ou .xls real)
+            # Tenta ler arquivos Excel
             if uploaded_file.name.endswith('.xlsx'):
                 df = pd.read_excel(uploaded_file, engine='openpyxl')
             elif uploaded_file.name.endswith('.xls'):
                 try:
                     df = pd.read_excel(uploaded_file, engine='xlrd')
                 except:
-                    # Se falhar como XLS, tratamos como CSV abaixo
                     pass
 
-            # Se for CSV ou se o .xls falhou (comum em arquivos que são texto mas tem extensão .xls)
+            # Se for CSV ou se a leitura de Excel falhou
             if df is None:
                 encodings = ['utf-8', 'iso-8859-1', 'cp1252', 'latin1']
                 for enc in encodings:
                     try:
                         uploaded_file.seek(0)
-                        df = pd.read_csv(uploaded_file, sep=None, engine='python', encoding=enc)
+                        # on_bad_lines='skip' ignora linhas com erro de colunas (como a linha 89 que você citou)
+                        df = pd.read_csv(uploaded_file, sep=None, engine='python', encoding=enc, on_bad_lines='skip')
                         break
-                    except UnicodeDecodeError:
+                    except Exception:
                         continue
             
             if df is not None:
-                # Limpeza de nomes de colunas (remove espaços e garante string)
                 df.columns = [str(c).strip() for c in df.columns]
 
                 if 'Data' not in df.columns:
                     st.error(f"Coluna 'Data' não encontrada. Verifique o arquivo. Colunas lidas: {list(df.columns)}")
                 else:
-                    st.info("📄 Arquivo carregado com sucesso!")
+                    st.info("📄 Arquivo lido com sucesso!")
 
                     with st.spinner("Gerando OFX..."):
                         now_str = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -129,8 +128,6 @@ with st.container():
                                     dt = pd.to_datetime(dt_val, dayfirst=True)
                                 
                                 dt_str = dt.strftime('%Y%m%d%H%M%S')
-                                
-                                # Tratamento de Valor (limpa pontos de milhar e troca vírgula por ponto)
                                 val_raw = str(row['Valor']).replace('.', '').replace(',', '.')
                                 amount = float(val_raw)
                                 
@@ -138,7 +135,6 @@ with st.container():
                                 hist = str(row['Histórico']) if 'Histórico' in df.columns else ""
                                 nome_cli = str(row['Nome Cliente']).strip() if 'Nome Cliente' in df.columns and pd.notnull(row['Nome Cliente']) else ""
                                 
-                                # Regras de MEMO
                                 if "Tarifas" in hist and "Fatura" in hist:
                                     memo = "Tarifa de Fatura"
                                 elif "Fatura" in hist and "Tarifas" not in hist:
@@ -162,7 +158,6 @@ with st.container():
                             except:
                                 continue
 
-                        # Pega o saldo final da última linha válida
                         last_bal = str(df.iloc[-1]['Saldo Final']).replace(',', '.') if 'Saldo Final' in df.columns else "0.00"
                         
                         ofx_footer = [
@@ -181,8 +176,5 @@ with st.container():
                         file_name=f"Extrato_{datetime.now().strftime('%Y%m%d')}.ofx",
                         mime="text/plain"
                     )
-            else:
-                st.error("Não foi possível ler o arquivo. Verifique se o formato é suportado.")
-
         except Exception as e:
             st.error(f"Erro ao processar arquivo: {e}")
